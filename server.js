@@ -45,7 +45,8 @@ app.options('/stream.json', function(req, res) {
   res.end('\n');
 });
 
-app.post('/stream.json', function(req, res) {
+
+var handleStream = function(req, res) {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Access-Control-Allow-Origin': '*',
@@ -55,31 +56,25 @@ app.post('/stream.json', function(req, res) {
 
   var stream = req.query.stream || '*';
 
-  console.log('New listener on', stream);
+  console.log('New listener to', stream);
   Hulk.add_listener(stream, res);
 
+  t = setInterval(function () {
+    res.write('\n'); // Keepalive for fallbacks
+  }, 10000);
+
   res.on('close', function() {
+    console.log('Dropped listener to', stream);
     Hulk.remove_listener(stream, res);
   });
+};
+
+app.post('/stream.json', function(req, res) {
+  handleStream(req, res);
 });
 
 app.get('/stream.json', function(req, res) {
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Access-Control-Allow-Origin': '*',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive'
-  });
-
-  var stream = req.query.stream || '*';
-
-  console.log('New listener on', stream);
-  Hulk.add_listener(stream, res);
-
-  res.on('close', function() {
-    Hulk.remove_listener(stream, res);
-  });
-
+  handleStream(req, res);
 });
 
 console.log('Hulk running at http://127.0.0.1:' + CONFIG.port + '/');
