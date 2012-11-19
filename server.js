@@ -40,11 +40,36 @@ app.get('/test', function(req, res) {
   lactate.serve('test.html', req, res);
 });
 
+app.options('/stream.json', function(req, res) {
+  res.writeHead(200, {'Content-Type': 'text/event-stream', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type'});
+  res.end('\n');
+});
+
+app.post('/stream.json', function(req, res) {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Access-Control-Allow-Origin': '*',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
+
+  var stream = req.query.stream || '*';
+
+  console.log('New listener on', stream);
+  Hulk.add_listener(stream, res);
+
+  res.on('close', function() {
+    Hulk.remove_listener(stream, res);
+  });
+});
 
 app.get('/stream.json', function(req, res) {
-  res.header('Content-Type', 'text/event-stream');
-  res.header('Cache-Control', 'no-cache');
-  res.header('Connection', 'keep-alive');
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Access-Control-Allow-Origin': '*',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
 
   var stream = req.query.stream || '*';
 
