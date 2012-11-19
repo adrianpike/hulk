@@ -1,0 +1,22 @@
+Hulk
+====
+
+It's like juggernaut (https://github.com/maccman/juggernaut), but better, because it doesn't use that janky-ass socket.io.
+
+It uses EventSource, puts in a polyfill for those poor IE users, and will be mostly API-compatible with Juggernaut. Ideally it'll be a dropin replacement - just do something like this:
+
+    Juggernaut = Hulk;
+
+    var h = new Hulk;
+    h.subscribe("channel1", function(data){
+      console.log(data);
+    });
+
+You can use the same Juggernaut gem you've been using in the past, just swap out the node server.
+
+
+TODO
+----
+
+* Metadata
+* Client Events
