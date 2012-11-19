@@ -1,5 +1,6 @@
 {
   "port"      : "8080",
   "redis"     : "redis://localhost",
-  "ssl"       : false
+  "ssl"       : false,
+  "event_namespace": "juggernaut"
 }

@@ -41,10 +41,12 @@ app.get('/test', function(req, res) {
 });
 
 
-app.get('/stream/:stream.json', function(req, res) {
+app.get('/stream.json', function(req, res) {
   res.header('Content-Type', 'text/event-stream');
   res.header('Cache-Control', 'no-cache');
   res.header('Connection', 'keep-alive');
+
+  var stream = req.query.stream || '*';
 
   console.log('New listener on', stream);
   Hulk.add_listener(stream, res);
